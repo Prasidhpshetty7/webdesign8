@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+node_modules/
+target/deploy/
+npm-debug.log
+Gemfile.lock
+dist
+.netlify/
+.astro/

@@ -1,0 +1,202 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/BaseLayout.astro';
+
+export async function getStaticPaths() {
+    const projects = await getCollection('projects');
+    return projects.map(project => {
+        const publishDate = project.data.publishDate;
+        const year = publishDate.getFullYear();
+        const month = String(publishDate.getMonth() + 1).padStart(2, '0');
+        const baseSlug = project.slug.replace(/^\d{4}-\d{2}-/, '');
+        
+        return {
+            params: { 
+                slug: `${year}/${month}/${baseSlug}`
+            },
+            props: { project },
+        };
+    });
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+const title = `${project.data.title} | Prasidh P Shetty`;
+---
+<BaseLayout title={title} description={project.data.description} headerVariant="small">
+    <div class="blog-timeline">
+        <article class="timeline-entry">
+                <div class="post-header">
+                    <h2 class="timeline-co type-primary">
+                        {project.data.title}
+                    </h2>
+                    {project.data.description && <div class="post-description">{project.data.description}</div>}
+                    <div class="project-meta">
+                        <span class="timeline-time type-secondary">{project.data.publishDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                        <div class="project-technologies">
+                            {project.data.technologies.map(tech => (
+                                <span class="tech-tag">{tech}</span>
+                            ))}
+                        </div>
+                        <div class="project-links">
+                            {project.data.liveUrl && (
+                                <a href={project.data.liveUrl} target="_blank" rel="noopener noreferrer" class="project-link">Have a look →</a>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            <div class="timeline-description">
+                <Content />
+            </div>
+        </article>
+    </div>
+</BaseLayout>
+
+<style is:global>
+/* Override main grid to exclude intro area */
+main {
+    grid-template-areas:
+        ". header ."
+        ". blog ."
+        ". footer .";
+    grid-template-rows: 1fr auto auto;
+    grid-template-columns: 1fr minmax(auto, 800px) 1fr;
+}
+
+.logo {
+    margin: var(--v-space) 0;
+}
+
+/* Override timeline entry grid for project posts */
+.timeline-entry {
+    grid-template-areas:
+        ". co ."
+        ". description .";
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr 10fr 1fr;
+    padding: calc(var(--v-space)/2) 0;
+    backdrop-filter: none;
+}
+
+.post-header {
+    grid-area: co;
+    margin: calc(var(--v-space) * .25) 0 0;
+}
+
+.timeline-co {
+    margin: 0 0 calc(var(--v-space) * .25) 0;
+}
+
+.post-description {
+    font-size: 1.2rem;
+    margin: calc(var(--v-space) * .25) 0;
+    color: var(--c-secondary);
+    font-style: italic;
+}
+
+.project-meta {
+    margin-top: calc(var(--v-space) * .25);
+}
+
+.timeline-time {
+    display: block;
+    margin-bottom: calc(var(--v-space) * .25);
+}
+
+.project-technologies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: calc(var(--v-space) * .25) 0;
+}
+
+.tech-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--c-tertiary);
+    border: 1px solid var(--c-primary);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--c-primary);
+    font-weight: var(--f-weight);
+}
+
+.project-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: calc(var(--v-space) * .25);
+}
+
+.project-link {
+    font-size: 1rem;
+    font-weight: var(--f-weight);
+}
+
+.project-tech {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+}
+
+@media only screen and (max-width: 834px) {
+    main {
+        grid-template-columns: 1fr 20fr 1fr;
+    }
+    .timeline-entry {
+        grid-template-columns: 1fr 20fr 1fr;
+    }
+}
+
+/* Enhance markdown content styling */
+.timeline-description h2 {
+    font-size: 2rem;
+    margin: 2rem 0 1rem;
+    font-weight: var(--f-weight);
+    color: var(--c-primary);
+}
+
+.timeline-description h3 {
+    font-size: 1.5rem;
+    margin: 1.5rem 0 0.75rem;
+    font-weight: var(--f-weight);
+    color: var(--c-primary);
+}
+
+.timeline-description ul,
+.timeline-description ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.timeline-description li {
+    margin: 0.5rem 0;
+}
+
+.timeline-description p {
+    margin: 1rem 0;
+}
+
+.timeline-description strong {
+    color: var(--c-primary);
+}
+
+.timeline-description code {
+    background: var(--c-tertiary);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.timeline-description pre {
+    background: var(--c-tertiary);
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.timeline-description pre code {
+    background: none;
+    padding: 0;
+}
+</style>

@@ -1,0 +1,18 @@
+{
+    "extends": "astro/tsconfigs/strict",
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es6",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "preserveConstEnums": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

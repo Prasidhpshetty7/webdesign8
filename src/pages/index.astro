@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/BaseLayout.astro';
+
+const projects = await getCollection('projects');
+projects.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+---
+<BaseLayout>
+    <div class="canvas-container"></div>
+    <p class="intro type-primary">I am a Web Designer and Full-Stack Developer passionate about building modern, visually engaging, and user-focused digital experiences that combine clean design with solid technical&nbsp;foundations.</p>
+    <section class="blog-timeline">
+        <header class="timeline-entry timeline-header">
+            <h2 class="timeline-co type-header">Projects</h2>
+        </header>
+        {projects.map(project => (
+            <article class="timeline-entry">
+                <h2 class="timeline-co type-primary">
+                    <a href={`/projects/${project.data.publishDate.getFullYear()}/${String(project.data.publishDate.getMonth() + 1).padStart(2, '0')}/${project.slug.replace(/^\d{4}-\d{2}-/, '')}`}>{project.data.title}</a>
+                    <span class="timeline-time type-secondary">{project.data.publishDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                </h2>
+                <div class="timeline-description">
+                    <p>{project.data.description}</p>
+                    <p class="project-tech"><strong>Technologies:</strong> {project.data.technologies.join(', ')}</p>
+                    {project.data.liveUrl && <p><a href={project.data.liveUrl} target="_blank" rel="noopener noreferrer">Have a look →</a></p>}
+                </div>
+            </article>
+        ))}
+    </section>
+
+    <section class="work-timeline" style="margin-top: var(--v-space);">
+        <header class="timeline-entry timeline-header">
+            <h2 class="timeline-co type-header">Skills & Expertise</h2>
+        </header>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary">Full-Stack Development</h3>
+            <div class="timeline-description">
+                <p>I work across the full development stack — from crafting intuitive frontend interfaces to building robust backend systems, APIs, and database architectures. I specialize in creating responsive websites and scalable web applications that combine clean design with solid technical foundations.</p>
+            </div>
+        </article>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary">Modern Web Technologies</h3>
+            <div class="timeline-description">
+                <p>Experienced with modern frameworks, libraries, and tools for building performant web applications. I follow industry best practices such as version control, agile workflows, and CI/CD pipelines to deliver high-quality, maintainable, and performant solutions.</p>
+            </div>
+        </article>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary">Design & User Experience</h3>
+            <div class="timeline-description">
+                <p>With a strong sense of design and attention to detail, I believe great digital products are built at the intersection of aesthetics, usability, and engineering. I enjoy continuous learning, solving complex problems, and transforming ideas into impactful digital solutions.</p>
+            </div>
+        </article>
+    </section>
+    <script src="../client/main.ts"></script>
+</BaseLayout>
